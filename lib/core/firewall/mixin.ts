@@ -4,7 +4,7 @@ import { buildStack } from "./build-stack";
 
 export function mixin(... brickFactories: Array<BrickFactory>)  {
     return (path: string, ...argsArray: Array<Array<any>> ) => {
-        const bricks = brickFactories.map((brickFactory, i) => brickFactory(path, argsArray[i]));
+        const bricks = brickFactories.map((brickFactory, i) => brickFactory(path, undefined, argsArray[i]));
         return buildStack(...bricks).toBrick();
     }
 }

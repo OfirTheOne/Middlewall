@@ -6,5 +6,5 @@
 // }
 
 export * from './firewall';
-export * from './operations';
+export * from './operations/validations';
 // 

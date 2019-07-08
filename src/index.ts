@@ -1,3 +1,7 @@
+
+import './app';
+/*
+
 import * as fw from './../lib';
 import {mixin, or, buildStack } from './../lib';
 
@@ -30,4 +34,4 @@ const next =  (res) => {
 
 paginationValidator(res, req, next)
 
-
+*/

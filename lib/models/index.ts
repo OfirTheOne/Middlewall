@@ -2,7 +2,11 @@
 export type BrickFn = (arg: any) => BrickResultCollection;
 // export type AsyncBrickFn = (arg: any) => Promise<BrickResultCollection>;
 
-export type BrickFactory = (pate: any, ...args: any[]) => BrickFn;
+export type IfPassFn = (target: any, origin: any) => any
+
+export type BrickFactory = (path: any, ifPass?: IfPassFn, ...args: any[]) => BrickFn;
+
+
 
 
 export interface BrickResult {
@@ -17,6 +21,8 @@ export interface BrickResultCollection {
     pass: boolean;
     errors: Array<BrickResult>;
 };
+
+
 
 
 export interface IFirewall {

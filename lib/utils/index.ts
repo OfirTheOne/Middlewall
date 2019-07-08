@@ -1,4 +1,4 @@
-// import {InvalidSubElementPathFormatError} from './../errors';
+import {InvalidPathFormatError, FailedLocateTargetError} from './../errors';
 /**
  * @example
  * dotProtocolPathRegex.test('user'); // --> true
@@ -28,11 +28,13 @@ const dotProtocolPathRegex = /^((\w|\$)+(-(\w|\$)+)*)+(\.(\w|\$)+(-(\w|\$)+)*)*$
  */
 export function getNestedElementByPath(obj: any, dotProtocolPath: string) {
     if(!dotProtocolPathRegex.test(dotProtocolPath)) {
-        throw  new Error(dotProtocolPath);//new InvalidSubElementPathFormatError(dotProtocolPath)
+        throw new InvalidPathFormatError(dotProtocolPath)
     }
     const slicedPath = dotProtocolPath.split('.');
     let curLvlElement = obj;
-    for(let lvl = 0; lvl < slicedPath.length; lvl++) {
+    let lvl = 0;
+    const targetDepth = slicedPath.length;
+    for(; lvl < targetDepth; lvl++) {
         try {
             if(curLvlElement == undefined) { break; }
             const elementName = slicedPath[lvl];
@@ -43,5 +45,39 @@ export function getNestedElementByPath(obj: any, dotProtocolPath: string) {
             break;
         }
     }
+
+    if(lvl < slicedPath.length -1) {
+        throw new FailedLocateTargetError(dotProtocolPath, obj);
+    }
+
     return curLvlElement;
 }
+
+export function getNestedElementParentByPath(obj: any, dotProtocolPath: string) {
+    if(!dotProtocolPathRegex.test(dotProtocolPath)) {
+        throw  new Error(dotProtocolPath);//new InvalidSubElementPathFormatError(dotProtocolPath)
+    }
+    const slicedPath = dotProtocolPath.split('.');
+    let curLvlElement = obj;
+    let lvl = 0
+    const targetDepth = slicedPath.length-1;
+    for(; lvl < targetDepth; lvl++) {
+        try {
+            if(curLvlElement == undefined) { break; }
+            const elementName = slicedPath[lvl];
+            curLvlElement = curLvlElement[elementName]
+        } catch (error) {
+            // handle maybe console.log
+            curLvlElement = undefined
+            break;
+        }
+    }
+
+    if(lvl < targetDepth) {
+        throw new FailedLocateTargetError(dotProtocolPath, obj);
+    }
+
+    return { parent: curLvlElement, pathToChild: slicedPath[lvl]};
+}
+
+
