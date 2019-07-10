@@ -10,5 +10,11 @@ export class ShowValidator {
         xfw.isNumber('itemsPerPage'),
         xfw.isBetween('itemsPerPage', 1, 100, parseInt)
     ).query()
+
+
+    static dateValidator = xfw.buildStack(
+        xfw.isNumber('start'),
+        xfw.isPositive('end', parseInt),
+    ).query()
     
 }

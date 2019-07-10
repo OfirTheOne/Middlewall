@@ -81,3 +81,12 @@ export function getNestedElementParentByPath(obj: any, dotProtocolPath: string) 
 }
 
 
+
+export const tryCatch = (cb: Function) => {
+    
+    try {
+        return [undefined,cb()];
+    } catch (error) {
+        return [error,undefined];
+    }
+}
