@@ -1,6 +1,6 @@
-import { BrickFn, BrickResultCollection } from "../../models";
+import { BrickFn, AsyncBrickFn, BrickResultCollection } from "../../models";
 
-export function reduce(arg: any, bricks: Array<BrickFn>): BrickResultCollection {
+export function syncReduce(arg: any, bricks: Array<BrickFn>): BrickResultCollection {
     try {
         let pass = true;
         const errors = [];
@@ -21,8 +21,10 @@ export function reduce(arg: any, bricks: Array<BrickFn>): BrickResultCollection 
     }
 
 }
-/*
-export async function asyncReduce(arg: any, bricks: Array<BrickFn>): Promise<BrickResultCollection> {
+
+
+
+export async function reduce(arg: any, bricks: Array<AsyncBrickFn>): Promise<BrickResultCollection> {
     try {
         let pass = true;
         const errors = [];
@@ -43,4 +45,3 @@ export async function asyncReduce(arg: any, bricks: Array<BrickFn>): Promise<Bri
     }
 
 }
-*/

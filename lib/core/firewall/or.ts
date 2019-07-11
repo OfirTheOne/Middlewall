@@ -1,19 +1,19 @@
-import { BrickFn, BrickResultCollection } from "../../models";
+import { BrickFn, AsyncBrickFn, BrickResultCollection } from "../../models";
 import { Firewall } from "./";
 
-export function or(...bricks: Array<BrickFn|Firewall>): BrickFn {
+export function or(...bricks: Array<AsyncBrickFn|Firewall>): AsyncBrickFn {
 
     const _bricks =  bricks.map(brick => 
         typeof brick == 'function' ?  brick : brick.toBrick()
     );
 
-    return (arg) => {
+    return async (arg) => {
         try {
             let pass = false;
             const errors = [];
             for (let i = 0; i < bricks.length; i++) {
 
-                const result = (_bricks[i])(arg);
+                const result = await (_bricks[i])(arg);
 
                 pass = pass || result.pass;
                    

@@ -1,9 +1,9 @@
-import { BrickFn, IfPassFn } from "../../../../models";
+import { BrickFn, IfPassFn, AsyncBrickFn } from "../../../../models";
 import { BrickError } from "../../../brick-error";
 import { generateBrick } from "../../generate-brick";
 import { _includeKeys, _isDefine, _isNotDefine, _isEmpty, _isNaN } from "./validation-logic";
 
-export function includeKeys(path: string, keys: Array<string>, ifPass?: IfPassFn, error?: ErrorConstructor | string): BrickFn {
+export function includeKeys(path: string, keys: Array<string>, ifPass?: IfPassFn, error?: ErrorConstructor | string): AsyncBrickFn {
     const _error = new BrickError(`%s is not pass as define`, 'isDefine');
     return generateBrick(
         _includeKeys, [keys],
@@ -13,7 +13,7 @@ export function includeKeys(path: string, keys: Array<string>, ifPass?: IfPassFn
     );
 }
 
-export function isDefine(path: string, ifPass?: IfPassFn, error?: ErrorConstructor | string): BrickFn {
+export function isDefine(path: string, ifPass?: IfPassFn, error?: ErrorConstructor | string): AsyncBrickFn {
     const _error = new BrickError(`%s is not pass as define`, 'isDefine');
     return generateBrick(
         _isDefine, undefined,
@@ -23,7 +23,7 @@ export function isDefine(path: string, ifPass?: IfPassFn, error?: ErrorConstruct
     );
 }
 
-export function isNotDefine(path: string, ifPass?: IfPassFn, error?: ErrorConstructor | string): BrickFn {
+export function isNotDefine(path: string, ifPass?: IfPassFn, error?: ErrorConstructor | string): AsyncBrickFn {
     const _error = new BrickError(`%s is not pass as not define`, 'isNotDefine');
     return generateBrick(
         _isNotDefine, undefined,
@@ -33,7 +33,7 @@ export function isNotDefine(path: string, ifPass?: IfPassFn, error?: ErrorConstr
     );
 }
 
-export function isEmpty(path: string, ifPass?: IfPassFn, error?: ErrorConstructor | string): BrickFn {
+export function isEmpty(path: string, ifPass?: IfPassFn, error?: ErrorConstructor | string): AsyncBrickFn {
     const _error = new BrickError(`%s is not pass as empty`, 'isEmpty');
 
     return generateBrick(
@@ -44,7 +44,7 @@ export function isEmpty(path: string, ifPass?: IfPassFn, error?: ErrorConstructo
     );
 }
 
-export function isNaN(path: string, ifPass?: IfPassFn, error?: ErrorConstructor | string): BrickFn {
+export function isNaN(path: string, ifPass?: IfPassFn, error?: ErrorConstructor | string): AsyncBrickFn {
     const _error = new BrickError(`%s is not NaN`, 'isNaN');
 
     return generateBrick(
