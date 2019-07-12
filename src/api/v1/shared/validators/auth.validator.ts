@@ -9,7 +9,6 @@ console.log(cryptoUtils.saltHashPassword(AuthHeaderSecret));
 
 export class AuthValidator {
 
-
     static authHeaderValidator = xfw.buildStack(
         xfw.isExist('x-auth'),
         xfw.run('x-auth', 
@@ -24,11 +23,10 @@ export class AuthValidator {
     ).body();
 
     static userDataValidator = xfw.buildStack(
-        xfw.isAlpha('user.firstName', undefined, undefined, { optional: true }),
-        xfw.isAlpha('user.lastName', undefined, undefined, { optional: true }),
-        xfw.isNumber('user.age', undefined, undefined, { optional: true }),
-        xfw.isURL('user.profilePicture', undefined, undefined, { optional: true }),
-    
+        xfw.isAlpha('user.firstName',       undefined, undefined, { optional: true }),
+        xfw.isAlpha('user.lastName',        undefined, undefined, { optional: true }),
+        xfw.isNumber('user.age',            undefined, undefined, { optional: true }),
+        xfw.isURL('user.profilePicture',    undefined, undefined, { optional: true }),
     ).body();
     
 }
