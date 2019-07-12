@@ -1,16 +1,12 @@
 
 
 import * as xfw from './../../../../lib'
+import * as cryptoUtils from '../../../utils';
+
+const AuthHeaderSecret = 'secret_header_123'
+console.log(cryptoUtils.saltHashPassword(AuthHeaderSecret));
 
 export class ShowValidator {
-
-
-    static authValidator = xfw.buildStack(
-        xfw.run('x-auth', async (authHeader: string) => {
-            
-            return false;
-        })
-    ).headers();
 
     static paginationValidator = xfw.buildStack(
         xfw.isNumber('page'),
