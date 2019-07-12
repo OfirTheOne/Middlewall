@@ -23,15 +23,12 @@ export class AuthValidator {
         xfw.isOWASPStrongPassword('user.password')
     ).body();
 
-    static userSignUpValidator = xfw.buildStack(
-        xfw.isEmail('user.email'),
-        xfw.isOWASPStrongPassword('user.password'),
-        xfw.or(
-            xfw.isAlpha('user.firstName'),
-            xfw.isAlpha('user.lastName'),
-            xfw.isNumber('user.age'),
-            xfw.isURL('user.profilePicture'),
-        )
+    static userDataValidator = xfw.buildStack(
+        xfw.isAlpha('user.firstName', undefined, undefined, { optional: true }),
+        xfw.isAlpha('user.lastName', undefined, undefined, { optional: true }),
+        xfw.isNumber('user.age', undefined, undefined, { optional: true }),
+        xfw.isURL('user.profilePicture', undefined, undefined, { optional: true }),
+    
     ).body();
     
 }

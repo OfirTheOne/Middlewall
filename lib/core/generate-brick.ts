@@ -1,22 +1,25 @@
 import { getNestedElementByPath, getNestedElementParentByPath } from './../utils';
 import { BrickError } from './brick-error';
 
-import { BrickFn, BrickResultCollection, IfPassFn, AsyncBrickFn, ValidationCb } from './../models';
+import { BrickFn, BrickResultCollection, IfPassFn, AsyncBrickFn, ValidationCb, ValidationOptions } from './../models';
 
 export function generateSyncBrick(
     cb: (...args: any[]) => boolean, 
     extraArgs: any[] = [],
     path: string, 
     brickError: BrickError,
-    ifPass?: IfPassFn
+    ifPass?: IfPassFn,
+    options?: ValidationOptions
 ) : BrickFn {
     return (arg: any): BrickResultCollection => {
         try {        
 
             // ** 01 - find target get result
-            let target: any, result: boolean;    
+            let target: any, result: boolean;
+            let isOptional = options ? options.optional : false    
             try {
                 target = getNestedElementByPath(arg, path);
+                isOptional = isOptional && (target == undefined || target == null)
                 result = cb(target, ...extraArgs); 
             } catch (error) {
                 throw error;
@@ -24,13 +27,13 @@ export function generateSyncBrick(
 
             // ** 02 - validate result
             let error: BrickResultCollection;
-            if(!result) {
+            if(!result && !isOptional) {
                 error = { pass: false, errors: [brickError.createError(arg, path)] } ;
             } else {
 
             // ** 03 - is-pass action
-                try {
-                    if(ifPass && typeof ifPass == 'function') {
+                try { 
+                    if(result && ifPass && typeof ifPass == 'function') {
                         const {parent, pathToChild} = getNestedElementParentByPath(arg, path);
                         parent[pathToChild] = ifPass(target, arg);
                     }
@@ -51,15 +54,18 @@ export function generateBrick(
     extraArgs: any[] = [],
     path: string, 
     brickError: BrickError,
-    ifPass?: IfPassFn
+    ifPass?: IfPassFn,
+    options?: ValidationOptions
 ) : AsyncBrickFn {
     return async (arg: any): Promise<BrickResultCollection> => {
         try {        
 
             // ** 01 - find target get result
-            let target: any, result: boolean;    
+            let target: any, result: boolean;  
+            let isOptional = options ? options.optional : false;
             try {
                 target = getNestedElementByPath(arg, path);
+                isOptional = isOptional && (target == undefined || target == null);   
                 result = await cb(target, ...extraArgs); 
             } catch (error) {
                 throw error;
@@ -67,13 +73,13 @@ export function generateBrick(
 
             // ** 02 - validate result
             let error: BrickResultCollection;
-            if(!result) {
+            if(!result && !isOptional) {
                 error = { pass: false, errors: [brickError.createError(arg, path)] } ;
             } else {
 
             // ** 03 - is-pass action
                 try {
-                    if(ifPass && typeof ifPass == 'function') {
+                    if(result && ifPass && typeof ifPass == 'function') {
                         const {parent, pathToChild} = getNestedElementParentByPath(arg, path);
                         parent[pathToChild] = ifPass(target, arg);
                     }
