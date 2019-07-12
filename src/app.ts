@@ -1,8 +1,10 @@
 import * as express from 'express';
 import {Request, Response, NextFunction } from 'express';
- 
-import { apiRoutes } from './api/routes'
+import * as bodyParser from 'body-parser';
+import { apiRoutes } from './api/routes';
 const app = express();
+
+app.use(bodyParser.json());
 
 app.use('/api', apiRoutes);
 

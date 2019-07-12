@@ -5,7 +5,7 @@ import {AuthValidator} from '../shared/validators/auth.validator';
 export class ShowController {
     router: Router = Router();
     constructor() {
-        this.router.get('/show',
+        this.router.get('/',
             AuthValidator.authHeaderValidator,
             ShowValidator.dateValidator,
             ShowValidator.paginationValidator,

@@ -35,3 +35,5 @@ export interface IFirewall {
 
     toBrick(): AsyncBrickFn
 }
+
+export * from './validation-options';

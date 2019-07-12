@@ -13,7 +13,11 @@ export const _includeKeys = (arg, keys: Array<string>) => {
     return false;
 }
 
-export const _isDefine = (arg) => arg != undefined && arg != null;
-export const _isNotDefine = (arg) => arg == undefined || arg == null;
-export const _isEmpty = (arg) => (_isDefine(arg) && arg.length && arg.length > 0);
+export const _isExist = (arg) => arg != undefined && arg != null;
+export const _isNotExist = (arg) => arg == undefined || arg == null;
+
+export const _isNull = (arg) => arg == null;
+export const _isUndefined = (arg) => arg == undefined;
+
+export const _isEmpty = (arg) => (_isExist(arg) && arg.length && arg.length > 0);
 export const _isNaN = (arg) => arg == NaN;

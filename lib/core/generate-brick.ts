@@ -1,7 +1,7 @@
-import { getNestedElementByPath, getNestedElementParentByPath } from '../../utils';
-import { BrickError } from '../brick-error';
+import { getNestedElementByPath, getNestedElementParentByPath } from './../utils';
+import { BrickError } from './brick-error';
 
-import { BrickFn, BrickResultCollection, IfPassFn, AsyncBrickFn, ValidationCb } from './../../models';
+import { BrickFn, BrickResultCollection, IfPassFn, AsyncBrickFn, ValidationCb } from './../models';
 
 export function generateSyncBrick(
     cb: (...args: any[]) => boolean, 
