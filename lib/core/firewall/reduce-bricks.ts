@@ -1,47 +1,25 @@
-import { BrickFn, AsyncBrickFn, BrickResultCollection } from "../../models";
-
-export function syncReduce(arg: any, bricks: Array<BrickFn>): BrickResultCollection {
-    try {
-        let pass = true;
-        const errors = [];
-        for (let i = 0; i < bricks.length; i++) {
-
-            const result = (bricks[i])(arg);
-          
-            if(!result.pass) {
-                const errorAsArray = result.errors;
-                errors.push(...errorAsArray);
-            }
-            pass = pass && result.pass;      
-        }
-        return { pass, errors };
-
-    } catch (error) {
-        return { pass: false, errors: [{pass: false, error}] };
-    }
-
-}
+import { AsyncBrickFn, BrickResultCollection } from "../../models";
 
 
 
 export async function reduce(arg: any, bricks: Array<AsyncBrickFn>): Promise<BrickResultCollection> {
-    try {
-        let pass = true;
-        const errors = [];
-        for (let i = 0; i < bricks.length; i++) {
+        try {
+            let pass = true;
+            const errors = [];
+            for (let i = 0; i < bricks.length; i++) {
 
-            const result = await (bricks[i])(arg);
-          
-            if(!result.pass) {
-                const errorAsArray = result.errors;
-                errors.push(...errorAsArray);
+                const result = await (bricks[i])(arg);
+            
+                if(!result.pass) {
+                    const errorAsArray = result.errors;
+                    errors.push(...errorAsArray);
+                }
+                pass = pass && result.pass;      
             }
-            pass = pass && result.pass;      
-        }
-        return { pass, errors };
+            return { pass, errors };
 
-    } catch (error) {
-        return { pass: false, errors: [{pass: false, error}] };
-    }
+        } catch (error) {
+            return { pass: false, errors: [{pass: false, error}] };
+        }
 
 }

@@ -9,7 +9,13 @@ export class ShowController {
             AuthValidator.authHeaderValidator,
             ShowValidator.dateValidator,
             ShowValidator.paginationValidator,
-            this.getShows.bind(this))
+            this.getShows.bind(this)
+        );
+
+        this.router.post('/',
+            ShowValidator.showListValidator,
+            this.getShows.bind(this)
+        );
     }
 
     getShows(req: Request, res: Response, next: NextFunction) {

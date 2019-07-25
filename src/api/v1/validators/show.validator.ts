@@ -20,5 +20,16 @@ export class ShowValidator {
         xfw.isDateString('start', 'mm-dd-yyyy'),
         xfw.isDateString('end', 'mm-dd-yyyy'),
     ).query();
+
+    
+    static showListValidator = xfw.buildStack(
+        xfw.goTo( 'shows',
+            xfw.each(
+                xfw.isAlpha('name'),
+                xfw.isDateString('showDate', 'mm-dd-yyyy'),
+                xfw.isBoolean('visible')
+            )
+        )
+    ).body();
     
 }

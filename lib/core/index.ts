@@ -1,9 +1,8 @@
-// import { BrickFn } from './../models';
-// import { Firewall } from './firewall'
-
-// export function buildStack( ... bricks: Array<BrickFn|Firewall>) {
-//     return new Firewall(bricks);
-// }
 
 export * from './firewall';
-// 
+
+export * from './operators/build-stack';
+export * from './operators/or';
+export * from './operators/each';
+export * from './operators/mixin';
+export * from './operators/go-to';

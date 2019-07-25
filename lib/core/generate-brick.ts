@@ -3,6 +3,7 @@ import { BrickError } from './brick-error';
 
 import { BrickFn, BrickResultCollection, IfPassFn, AsyncBrickFn, ValidationCb, ValidationOptions } from './../models';
 
+/*
 export function generateSyncBrick(
     cb: (...args: any[]) => boolean, 
     extraArgs: any[] = [],
@@ -47,7 +48,7 @@ export function generateSyncBrick(
         }
     };
 }
-
+*/
 
 export function generateBrick(
     cb: ValidationCb, 
@@ -64,7 +65,9 @@ export function generateBrick(
             let target: any, result: boolean;  
             let isOptional = options ? options.optional : false;
             try {
-                target = getNestedElementByPath(arg, path);
+                target = path == '' ? 
+                    target :
+                    getNestedElementByPath(arg, path);
                 isOptional = isOptional && (target == undefined || target == null);   
                 result = await cb(target, ...extraArgs); 
             } catch (error) {
@@ -81,7 +84,9 @@ export function generateBrick(
                 try {
                     if(result && ifPass && typeof ifPass == 'function') {
                         const {parent, pathToChild} = getNestedElementParentByPath(arg, path);
-                        parent[pathToChild] = ifPass(target, arg);
+                        if(pathToChild) {
+                            parent[pathToChild] = ifPass(target, arg);
+                        }
                     }
                 } catch (error) {
                     throw error;

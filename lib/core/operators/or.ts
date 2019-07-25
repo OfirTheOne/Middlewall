@@ -1,5 +1,5 @@
 import { BrickFn, AsyncBrickFn, BrickResultCollection } from "../../models";
-import { Firewall } from "./";
+import { Firewall } from "./../firewall";
 
 export function or(...bricks: Array<AsyncBrickFn|Firewall>): AsyncBrickFn {
 
