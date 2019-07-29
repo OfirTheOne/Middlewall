@@ -5,7 +5,7 @@ import { mapBrickFn } from './map-brick-fn'
 export const _and = (bricks: Array<AsyncBrickFn|Firewall>, transformCb?: (arg: any)=> any): AsyncBrickFn => {
 
     const _bricks = mapBrickFn(bricks);
-    return async (arg) => {
+    return async (pathToArg: string = "", arg) => {
         let _arg: any = arg;
 
         try {
@@ -17,13 +17,13 @@ export const _and = (bricks: Array<AsyncBrickFn|Firewall>, transformCb?: (arg: a
         try {
             let pass = true;
             const errors = [];
-            if(!Array.isArray(arg)) {
-                arg = [arg];
-            }
-            for(let item of arg) {
+            // if(!Array.isArray(arg)) {
+            //     arg = [arg];
+            // }
+            // for(let item of arg) {
                 for (let i = 0; i < bricks.length; i++) {
     
-                    const result = await (_bricks[i])(item);
+                    const result = await (_bricks[i])(pathToArg, _arg);
                 
                     if(!result.pass) {
                         const errorAsArray = result.errors;
@@ -31,7 +31,7 @@ export const _and = (bricks: Array<AsyncBrickFn|Firewall>, transformCb?: (arg: a
                     }
                     pass = pass && result.pass;      
                 }
-            }
+            // }
             return { pass, errors };
     
         } catch (error) {

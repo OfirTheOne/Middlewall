@@ -7,13 +7,13 @@ export function or(...bricks: Array<AsyncBrickFn|Firewall>): AsyncBrickFn {
         typeof brick == 'function' ?  brick : brick.toBrick()
     );
 
-    return async (arg) => {
+    return async (pathToArg: string = "", arg) => {
         try {
             let pass = false;
             const errors = [];
             for (let i = 0; i < bricks.length; i++) {
 
-                const result = await (_bricks[i])(arg);
+                const result = await (_bricks[i])(pathToArg, arg);
 
                 pass = pass || result.pass;
                    

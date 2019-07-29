@@ -17,27 +17,27 @@ export class Firewall implements IFirewall{
         return this.exMiddlewareFactory((req)=>req);
     }
     public query() {
-        return this.exMiddlewareFactory((req)=>req.query);
+        return this.exMiddlewareFactory((req)=>({target: req.query, path: 'query'}));
     }
     public params() {
-        return this.exMiddlewareFactory((req)=>req.params);
+        return this.exMiddlewareFactory((req)=>({target: req.params, path: 'params'}));
     }
     public body() {
-        return this.exMiddlewareFactory((req)=>req.body);
+        return this.exMiddlewareFactory((req)=>({target: req.body, path: 'body'}));
     }
     public headers() {
-        return this.exMiddlewareFactory((req)=>req.headers);
+        return this.exMiddlewareFactory((req)=>({target: req.headers, path: 'headers'}));
     }
 
     public toBrick(): AsyncBrickFn {
-        return ( (arg: any) => reduce(arg, this._bricks) )   
+        return ( (arg: any) => reduce(undefined, arg, this._bricks) )   
     }
 
     private exMiddlewareFactory(transformCb: (a: any)=>any) {
         return async (req: Request, res: Response, next: NextFunction) => {
             try {
-                const target = transformCb(req);
-                const result = await reduce(target, this._bricks);
+                const {target, path} = transformCb(req);
+                const result = await reduce(path, target, this._bricks);
 
                 if (result.pass) {
                     return next();

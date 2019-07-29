@@ -90,3 +90,8 @@ export const tryCatch = (cb: Function) => {
         return [error,undefined];
     }
 }
+
+
+export const connectPathSegments = (a: string = "", b: string = "") => {
+    return b == "" ? a : `${a != "" ? a + '.' : a}${b}`
+}

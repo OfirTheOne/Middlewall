@@ -8,17 +8,17 @@ export function each(...bricks: Array<AsyncBrickFn|Firewall>): AsyncBrickFn {
         typeof brick == 'function' ?  brick : brick.toBrick()
     );
 
-    return async (arg) => {
+    return async (pathToArg: string = "", arg) => {
         try {
             let pass = true;
             const errors = [];
             if(!Array.isArray(arg)) {
                 arg = [arg];
             }
-            for(let item of arg) {
+            for(let j = 0; j < arg.length; j++) {
                 for (let i = 0; i < bricks.length; i++) {
-    
-                    const result = await (_bricks[i])(item);
+                    
+                    const result = await (_bricks[i])(`${pathToArg}[${j}]`,arg[j]);
                 
                     if(!result.pass) {
                         const errorAsArray = result.errors;

@@ -9,8 +9,8 @@ export const yyyy_mm_dd_slash_delimiter = /^(19|20)\d{2}\/(0[1-9]|1\d|2\d|3[01])
 export const mm_dd_yyyy_slash_delimiter = /^(0[1-9]|1\d|2\d|3[01])\/(0[1-9]|1[0-2])\/(19|20)\d{2}$/;
 export const dd_mm_yyyy_slash_delimiter = /^(0[1-9]|1[0-2])\/(0[1-9]|1\d|2\d|3[01])\/(19|20)\d{2}$/;
 export const yyyy_mm_dd_hyphen_delimiter = /^(19|20)\d{2}-(0[1-9]|1\d|2\d|3[01])-(0[1-9]|1[0-2])$/;
-export const mm_dd_yyyy_hyphen_delimiter = /^(0[1-9]|1\d|2\d|3[01])-(0[1-9]|1[0-2])-(19|20)\d{2}$/;
-export const dd_mm_yyyy_hyphen_delimiter = /^(0[1-9]|1[0-2])-(0[1-9]|1\d|2\d|3[01])-(19|20)\d{2}$/;
+export const dd_mm_yyyy_hyphen_delimiter = /^(0[1-9]|1\d|2\d|3[01])-(0[1-9]|1[0-2])-(19|20)\d{2}$/;
+export const mm_dd_yyyy_hyphen_delimiter = /^(0[1-9]|1[0-2])-(0[1-9]|1\d|2\d|3[01])-(19|20)\d{2}$/;
 
 
 export const alpha =  /([a-z]|[A-Z])+/;

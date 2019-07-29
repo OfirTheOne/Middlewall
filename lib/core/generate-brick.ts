@@ -1,4 +1,4 @@
-import { getNestedElementByPath, getNestedElementParentByPath } from './../utils';
+import { getNestedElementByPath, getNestedElementParentByPath, connectPathSegments } from './../utils';
 import { BrickError } from './brick-error';
 
 import { BrickFn, BrickResultCollection, IfPassFn, AsyncBrickFn, ValidationCb, ValidationOptions } from './../models';
@@ -58,11 +58,11 @@ export function generateBrick(
     ifPass?: IfPassFn,
     options?: ValidationOptions
 ) : AsyncBrickFn {
-    return async (arg: any): Promise<BrickResultCollection> => {
+    return async (pathToArg: string, arg: any): Promise<BrickResultCollection> => {
         try {        
 
             // ** 01 - find target get result
-            let target: any, result: boolean;  
+            let target: any = arg, result: boolean;  
             let isOptional = options ? options.optional : false;
             try {
                 target = path == '' ? 
@@ -77,7 +77,14 @@ export function generateBrick(
             // ** 02 - validate result
             let error: BrickResultCollection;
             if(!result && !isOptional) {
-                error = { pass: false, errors: [brickError.createError(arg, path)] } ;
+                error = { 
+                    pass: false, errors: [
+                        brickError.createError(
+                            target, 
+                            connectPathSegments(pathToArg, path)
+                        )
+                    ] 
+                };
             } else {
 
             // ** 03 - is-pass action
@@ -94,7 +101,7 @@ export function generateBrick(
             }
             return error || { pass: true , errors: [] } as BrickResultCollection;
         } catch (error) {
-            return { pass: false , errors: [{ pass : false, error}] } as BrickResultCollection;
+            return { pass: false , errors: [{ pass : false, error, path}] } as BrickResultCollection;
         }
     };
 }

@@ -27,7 +27,7 @@ export class ShowValidator {
             xfw.each(
                 xfw.isAlpha('name'),
                 xfw.isDateString('showDate', 'mm-dd-yyyy'),
-                xfw.isBoolean('visible')
+                xfw.isBoolean('visible', undefined, undefined, { optional: true })
             )
         )
     ).body();
