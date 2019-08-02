@@ -1,14 +1,12 @@
 
 import { BrickFn, AsyncBrickFn, BrickResultCollection } from "../../models";
 import { Firewall } from "./../firewall";
+import { mapBrickFn } from "../inner/map-brick-fn";
 
 export function each(...bricks: Array<AsyncBrickFn|Firewall>): AsyncBrickFn {
 
-    const _bricks =  bricks.map(brick => 
-        typeof brick == 'function' ?  brick : brick.toBrick()
-    );
-
-    return async (pathToArg: string = "", arg) => {
+    const _bricks = mapBrickFn(bricks)
+    return async (pathToArg: string = "", arg, root: any) => {
         try {
             let pass = true;
             const errors = [];
@@ -18,7 +16,7 @@ export function each(...bricks: Array<AsyncBrickFn|Firewall>): AsyncBrickFn {
             for(let j = 0; j < arg.length; j++) {
                 for (let i = 0; i < bricks.length; i++) {
                     
-                    const result = await (_bricks[i])(`${pathToArg}[${j}]`,arg[j]);
+                    const result = await (_bricks[i])(`${pathToArg}[${j}]`,arg[j], root);
                 
                     if(!result.pass) {
                         const errorAsArray = result.errors;

@@ -7,7 +7,8 @@
     "lib": "lib"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test:osx": "mocha --require ts-node/register tests/**/*.test.ts",
+    "test": "NODE_ENV=testing&& npm run test:osx",
     "build": "tsc",
     "start": "ts-node ./src/index.ts"
   },
@@ -22,7 +23,11 @@
   },
   "devDependencies": {
     "@types/body-parser": "^1.17.0",
+    "@types/chai": "^4.1.7",
+    "@types/mocha": "^5.2.7",
     "body-parser": "^1.19.0",
-    "express": "^4.17.1"
+    "chai": "^4.2.0",
+    "express": "^4.17.1",
+    "mocha": "^6.2.0"
   }
 }

@@ -4,9 +4,16 @@ export type SyncValidationCb = (...args: any[]) => boolean;
 export type AsyncValidationCb = (...args: any[]) => Promise<boolean>;
 
 export type BrickFn = (arg: any) => BrickResultCollection;
-export type AsyncBrickFn = (pathToArg: string, arg: any) => Promise<BrickResultCollection>;
+export type AsyncBrickFn = (pathToArg: string, arg: any, root: any) => Promise<BrickResultCollection>;
 
-export type IfPassFn = (target: any, origin: any) => any
+
+
+/**
+ * @description
+ * @param root top level argument. 
+ * @param target  value to validate  
+ * */
+export type IfPassFn = (target: any, root: any) => any
 
 
 export type BrickFactory = (path: any, ifPass?: IfPassFn, ...args: any[]) => BrickFn;

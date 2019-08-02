@@ -28,16 +28,19 @@ export class Firewall implements IFirewall{
     public headers() {
         return this.exMiddlewareFactory((req)=>({target: req.headers, path: 'headers'}));
     }
+    public locals() {
+        return this.exMiddlewareFactory((req)=>({target: req.locals, path: 'locals'}));
+    }
 
     public toBrick(): AsyncBrickFn {
-        return ( (arg: any) => reduce(undefined, arg, this._bricks) )   
+        return ( (pathToArg: string, arg: any, root: any) => reduce(undefined, arg, root, this._bricks) )   
     }
 
     private exMiddlewareFactory(transformCb: (a: any)=>any) {
         return async (req: Request, res: Response, next: NextFunction) => {
             try {
                 const {target, path} = transformCb(req);
-                const result = await reduce(path, target, this._bricks);
+                const result = await reduce(path, target, req, this._bricks);
 
                 if (result.pass) {
                     return next();
@@ -45,7 +48,7 @@ export class Firewall implements IFirewall{
                     return next(result);
                 }
             } catch (error) {
-                return next();
+                return next(error);
             }
         }
     }

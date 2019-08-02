@@ -58,7 +58,7 @@ export function generateBrick(
     ifPass?: IfPassFn,
     options?: ValidationOptions
 ) : AsyncBrickFn {
-    return async (pathToArg: string, arg: any): Promise<BrickResultCollection> => {
+    return async (pathToArg: string, arg: any, root: any): Promise<BrickResultCollection> => {
         try {        
 
             // ** 01 - find target get result
@@ -90,10 +90,11 @@ export function generateBrick(
             // ** 03 - is-pass action
                 try {
                     if(result && ifPass && typeof ifPass == 'function') {
-                        const {parent, pathToChild} = getNestedElementParentByPath(arg, path);
-                        if(pathToChild) {
-                            parent[pathToChild] = ifPass(target, arg);
-                        }
+                        // const {parent, pathToChild} = getNestedElementParentByPath(arg, path);
+                        // if(pathToChild) {
+                            // parent[pathToChild] = 
+                            ifPass(target, root);
+                        // }
                     }
                 } catch (error) {
                     throw error;
