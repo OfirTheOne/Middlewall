@@ -19,9 +19,6 @@ export class ShowValidator {
             xfw.isIntegerString('itemsPerPage', parseInt),
         ),
         xfw.isBetween('itemsPerPage', 1, 100 ),
-        xfw.run('', async (body) => {
-            return true;
-        }, (_, req) => { console.log(req.query)}),
     ).query();
 
     static asyncLinearOperationsValidator = xfw.buildStack(
