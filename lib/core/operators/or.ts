@@ -1,7 +1,7 @@
 import { BrickFn, AsyncBrickFn, BrickResultCollection } from "../../models";
-import { Firewall } from "./../firewall";
+import { Middlewall } from "./../middlewall";
 
-export function or(...bricks: Array<AsyncBrickFn|Firewall>): AsyncBrickFn {
+export function or(...bricks: Array<AsyncBrickFn| Middlewall>): AsyncBrickFn {
 
     const _bricks =  bricks.map(brick => 
         typeof brick == 'function' ?  brick : brick.toBrick()

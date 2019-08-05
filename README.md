@@ -1,13 +1,22 @@
 
-# Firewall
+# Middlewall
 
+
+With Middlewall you can build plugable validation middlewares, 
+Separate all validation functionality to different layer than your business logic, 
+making leaner, more readable code.
+
+* Custom async validations
+* parse incoming request while validating (support success callback use as a window for parsing)  
 <br>
 
 ## Usage
 
-Create plugable validation middleware with x-firewall operators and operations.
 
 ```ts
+
+import { buildStack, goTo, each, or } from 'middlewall/core';
+import * as ops from 'middlewall/operations';
 
 const app = express();
 
@@ -18,31 +27,31 @@ app.use((errors, req, res, next) => {
 });
 
 
-const paginationValidator = xfw.buildStack(
+const paginationValidator = buildStack(
     // validate query.page is a string-number and if so parse it
-    xfw.isIntegerString('page', (_, {query}) => query.page = parseInt(query.page), undefined, { optional: true }),  
-    xfw.isPositive('page', undefined, undefined, { optional: true }),
+    ops.isIntegerString('page', (_, {query}) => query.page = parseInt(query.page), undefined, { optional: true }),  
+    ops.isPositive('page', undefined, undefined, { optional: true }),
 
-    // validate query.itemsPerPage is a string-number and if so parse it
-    xfw.isIntegerString(
-        'itemsPerPage', (_, {query}) => query.itemsPerPage = parseInt(query.itemsPerPage), 
+    // validate query.pageSize is a string-number and if so parse it
+    ops.isIntegerString(
+        'pageSize', (_, {query}) => query.pageSize = parseInt(query.pageSize), 
         undefined, { optional: true }
     ),
-    xfw.isBetween('itemsPerPage', 1, 100),
+    ops.isBetween('pageSize', 1, 100),
 ).query(); // top target object is req.query.
 
-const dateValidator = xfw.buildStack(
-    xfw.isDateString('start', 'mm-dd-yyyy'),
-    xfw.isDateString('end', 'mm-dd-yyyy'),
+const dateValidator = buildStack(
+    ops.isDateString('start', 'mm-dd-yyyy'),
+    ops.isDateString('end', 'mm-dd-yyyy'),
 ).query(); // top target object is req.query. 
 
-const showListValidator = xfw.buildStack(
-    xfw.isArray('shows'), // validate body.shows is an array
-    xfw.goTo('shows', // navigate to body.shows 
-        xfw.each(     // perform the validations list on each of the items in the 'shows' array
-            xfw.isAlpha('name'),
-            xfw.isDateString('showDate', 'mm-dd-yyyy'),
-            xfw.isBoolean('visible', undefined, undefined, { optional: true })
+const showListValidator = buildStack(
+    ops.isArray('shows'), // validate body.shows is an array
+    goTo('shows', // navigate to body.shows 
+        each(     // perform the validations list on each of the items in the 'shows' array
+            ops.isAlpha('name'),
+            ops.isDateString('showDate', 'mm-dd-yyyy'),
+            ops.isBoolean('visible', undefined, undefined, { optional: true })
         )
     )
 ).body(); // top target object is req.body.
@@ -51,8 +60,7 @@ const showListValidator = xfw.buildStack(
 app.get('/', dateValidator, paginationValidator,
     (req, res, next) => {
         /*
-            pass all validations !
-            continue your flow
+            pass all validations! continue your flow
         */
     }
 );
@@ -60,8 +68,7 @@ app.get('/', dateValidator, paginationValidator,
 app.post('/', showListValidator,
     (req, res, next) => {
         /*
-            pass all validations !
-            continue your flow
+            pass all validations! continue your flow
         */
     }
 );
@@ -76,28 +83,28 @@ app.post('/', showListValidator,
 
 <br>
 
-### Firewall and Bricks
+### Middlewall and Bricks
 
-`Firewall` <br>
+`Middlewall` <br>
     encapsulate a collection of validation operations in a middleware compatible with express API.
 
-* `Firewall.req()` <br>
-    generate a middleware where the validation root object is incoming `request` object.
+* `Middlewall.prototype.req()` <br>
+    generate a middleware where the validation root object is the incoming `request` object.
 
-* `Firewall.body()`  <br>
-    generate a middleware where the validation root object is incoming `request.body` object.
+* `Middlewall.prototype.body()`  <br>
+    generate a middleware where the validation root object is the incoming `request.body` object.
 
-* `Firewall.query()` <br>
-    generate a middleware where the validation root object is incoming `request.query` object.
+* `Middlewall.prototype.query()` <br>
+    generate a middleware where the validation root object is the incoming `request.query` object.
 
-* `Firewall.params()` <br>
-    generate a middleware where the validation root object is incoming `request.params` object.
+* `Middlewall.prototype.params()` <br>
+    generate a middleware where the validation root object is the incoming `request.params` object.
 
-* `Firewall.headers()` <br>
-    generate a middleware where the validation root object is incoming `request.headers` object.
+* `Middlewall.prototype.headers()` <br>
+    generate a middleware where the validation root object is the incoming `request.headers` object.
 
-* `Firewall.locals()` <br>
-    generate a middleware where the validation root object is incoming `response.locals` object.
+* `Middlewall.prototype.locals()` <br>
+    generate a middleware where the validation root object is the incoming `response.locals` object.
 
 <br><br>
 
@@ -105,20 +112,23 @@ app.post('/', showListValidator,
 
 brick validation operators, customize the brick validation usage.
 
-`buildStack(...bricks: Array<AsyncBrickFn|Firewall>): Firewall` <br>
+`buildStack(...bricks: Array<AsyncBrickFn | Middlewall>): Middlewall` <br>
 Use to build a stack of validation operations, function as a logical and.
 
+`or(...bricks: Array<AsyncBrickFn | Middlewall>): AsyncBrickFn` <br>
+Use to perform validation on each item in an array.
 
-`goTo()` <br>
+`goTo(path: string, ...bricks: Array<AsyncBrickFn | Middlewall>): AsyncBrickFn` <br>
 Use to navigate inside the target object. 
 
+`each(...bricks: Array<AsyncBrickFn | Middlewall>): AsyncBrickFn` <br>
+Use to perform validation on each item in an array, where only all the items must pass the validation.
 
-`each()` <br>
-Use to perform validation on each item in an array.
+`some(...bricks: Array<AsyncBrickFn | Middlewall>): AsyncBrickFn` <br>
+Use to perform validation on each item in an array, where only one item must pass the validation.
 
 
-`or(...bricks: (AsyncBrickFn | Firewall)[]): AsyncBrickFn` <br>
-Use to perform validation on each item in an array.
+
 
 
 <br><br>

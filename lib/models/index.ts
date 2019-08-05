@@ -38,7 +38,7 @@ export interface BrickResultCollection {
 
 
 
-export interface IFirewall {
+export interface IMiddlewall {
 
     toBrick(): AsyncBrickFn
 }

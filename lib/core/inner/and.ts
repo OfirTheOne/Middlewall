@@ -1,9 +1,8 @@
 import { AsyncBrickFn } from "../../models";
-import { Firewall, reduce } from "../firewall";
+import { Middlewall, reduce } from "../middlewall";
 import { mapBrickFn } from './map-brick-fn'
-// import { reduce } from "../firewall/reduce-bricks";
 
-export const _and = (bricks: Array<AsyncBrickFn|Firewall>, transformCb?: (arg: any)=> any): AsyncBrickFn => {
+export const _and = (bricks: Array<AsyncBrickFn|Middlewall>, transformCb?: (arg: any)=> any): AsyncBrickFn => {
 
     const _bricks = mapBrickFn(bricks);
     return async (pathToArg: string = "", arg, root: any) => {

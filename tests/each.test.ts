@@ -86,4 +86,74 @@ describe('each operator', function () {
             throw error;
         }
     });
+
+    it('iterate over array of non object items - should return with errors', async () => {
+        try {
+            // -- 01 -- build the validation stack.
+            const validation = xfw.buildStack(
+                xfw.goTo('items', 
+                    xfw.each(
+                        op.isNumber(''),
+                    )
+                )
+            ).body();
+
+            // -- 02 -- stub the controller method.
+            const req = { 
+                body: {
+                    items: [ 10, 11, '12']
+                }
+            };
+            const res: any = {};
+            const next = (errors: BrickResultCollection) => {
+                // validate the expected errors
+                expect(errors).to.not.be.undefined;
+
+                expect(errors.errors).to.be.of.length(1);
+
+                const [err01] = errors.errors;
+
+                expect(err01.path).to.be.equals('body.items[2]');
+            }
+
+            // -- 03 -- run the controller method.
+            await validation(req as any, res, next);
+
+        } catch (error) {
+            throw error;
+        }
+    });
+
+    it('iterate over array of non object items - should return with no errors', async () => {
+        try {
+            // -- 01 -- build the validation stack.
+            const validation = xfw.buildStack(
+                xfw.goTo('items', 
+                    xfw.each(
+                        op.isNumber(''), 
+                        op.isGt('', 9)
+                    )
+                )
+            ).body();
+
+            // -- 02 -- stub the controller method.
+            const req = { 
+                body: {
+                    items: [ 10, 11, 12 ]
+                }
+            };
+            const res: any = {};
+            const next = (errors: BrickResultCollection) => {
+                // validate the expected errors
+                expect(errors).to.not.be.undefined;
+
+            }
+
+            // -- 03 -- run the controller method.
+            await validation(req as any, res, next);
+
+        } catch (error) {
+            throw error;
+        }
+    });
 })

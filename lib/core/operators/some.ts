@@ -3,12 +3,12 @@ import { BrickFn, AsyncBrickFn, BrickResultCollection } from "../../models";
 import { Middlewall } from "./../middlewall";
 import { mapBrickFn } from "../inner/map-brick-fn";
 
-export function each(...bricks: Array<AsyncBrickFn | Middlewall>): AsyncBrickFn {
+export function some(...bricks: Array<AsyncBrickFn|Middlewall>): AsyncBrickFn {
 
     const _bricks = mapBrickFn(bricks)
     return async (pathToArg: string = "", arg, root: any) => {
         try {
-            let pass = true;
+            let pass = false;
             const errors = [];
             if(!Array.isArray(arg)) {
                 arg = [arg];
@@ -22,7 +22,7 @@ export function each(...bricks: Array<AsyncBrickFn | Middlewall>): AsyncBrickFn 
                         const errorAsArray = result.errors;
                         errors.push(...errorAsArray);
                     }
-                    pass = pass && result.pass;      
+                    pass = pass || result.pass;      
                 }
             }
             return { pass, errors };

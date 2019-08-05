@@ -7,8 +7,7 @@ export class ShowController {
     constructor() {
         this.router.get('/',
             // AuthValidator.authHeaderValidator,
-            // ShowValidator.dateValidator,
-            ShowValidator.asyncLinearOperationsValidator,
+            ShowValidator.dateValidator,
             ShowValidator.paginationValidator,
             this.getShows.bind(this)
         );
@@ -20,7 +19,6 @@ export class ShowController {
     }
 
     getShows(req: Request, res: Response, next: NextFunction) {
-
         res.send('pass validations');
     }
 }

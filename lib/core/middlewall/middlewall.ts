@@ -1,12 +1,12 @@
 
 import { Request, Response, NextFunction } from 'express'
-import { BrickFn, IFirewall, AsyncBrickFn } from './../../models'
+import { BrickFn, IMiddlewall, AsyncBrickFn } from './../../models'
 import {reduce} from './reduce-bricks';
 
-export class Firewall implements IFirewall{
+export class Middlewall implements IMiddlewall{
 
     private _bricks: Array<AsyncBrickFn>;
-    constructor(private bricks: Array<AsyncBrickFn | Firewall>) {
+    constructor(private bricks: Array<AsyncBrickFn | Middlewall>) {
         this._bricks = bricks.map(brick => 
             typeof brick == 'function' ? 
                 brick : brick.toBrick()
