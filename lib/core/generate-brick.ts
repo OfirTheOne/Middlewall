@@ -1,7 +1,7 @@
 import { getNestedElementByPath, getNestedElementParentByPath, connectPathSegments } from './../utils';
 import { BrickError } from './brick-error';
 
-import { BrickFn, BrickResultCollection, IfPassFn, AsyncBrickFn, ValidationCb, ValidationOptions } from './../models';
+import { BrickFn, BrickResultCollection, IfPassFn, AsyncBrickFn, ValidationCb, ValidationOptions, ValidationOptionsParser } from './../models';
 
 /*
 export function generateSyncBrick(
@@ -61,9 +61,10 @@ export function generateBrick(
     return async (pathToArg: string, arg: any, root: any): Promise<BrickResultCollection> => {
         try {        
 
+            const parsedOptions = new ValidationOptionsParser(options);
             // ** 01 - find target get result
             let target: any = arg, result: boolean;  
-            let isOptional = options ? options.optional : false;
+            let isOptional = parsedOptions.optional;
             try {
                 target = path == '' ? 
                     target :

@@ -10,10 +10,10 @@ console.log(cryptoUtils.saltHashPassword(AuthHeaderSecret));
 export class ShowValidator {
 
     static paginationValidator = buildWall(
-        ops.isIntegerString('page', (_, {query}) => query.page = parseInt(query.page)),
+        ops.isIntegerString('page', (page, {query}) => query.page = parseInt(page)),
         ops.isPositive('page'),
-        ops.isIntegerString('itemsPerPage', (_, {query}) => query.page = parseInt(query.page)),
-        ops.isBetween('itemsPerPage', 1, 100 ),
+        ops.isIntegerString('pageSize', (pageSize, {query}) => query.pageSize = parseInt(pageSize)),
+        ops.isBetween('pageSize', 1, 100 ),
     ).query();
 
 

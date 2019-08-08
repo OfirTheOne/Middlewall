@@ -6,4 +6,16 @@ export interface ValidationOptions {
      * */
     optional: boolean,
 
+    overwriteValue?: boolean,
+
+}
+
+export class ValidationOptionsParser implements ValidationOptions {
+
+    optional: boolean;
+    overwriteValue?: boolean;
+    constructor(options: Partial<ValidationOptions> = {}) {
+        this.optional =         options.optional == undefined ?         false : options.optional;
+        this.overwriteValue =   options.overwriteValue == undefined ?   false : options.overwriteValue;
+    }
 }
