@@ -9,6 +9,7 @@ With Middlewall you can build plugable validation middlewares,
 Separate all validation functionality to different layer than your business logic, 
 making a leaner, reusable, more readable code.
 
+<br><br>
 
 ## Key Features :
 
@@ -17,7 +18,7 @@ making a leaner, reusable, more readable code.
 * descriptive error massages.
 * Custom async validations
 
-
+<br><br>
 
 
 ## Quick Overview
@@ -29,9 +30,7 @@ Working with Middlewall involve using
 In a nutshell, with the given operators you're composing a single block of validation from multiple individual validation operations then you can reuse that single block validation or transforming it to a middleware.
 
 
-
-
-<br>
+<br><br>
 
 ## Usage
 
@@ -166,7 +165,7 @@ app.post('/show', showListValidator, (req, res, next) => {
 
 <br>
 
-### Middlewall and Bricks
+### Middlewall
 
 `Middlewall` <br>
     encapsulate a collection of validation operations in a middleware compatible with express API.
@@ -189,31 +188,37 @@ app.post('/show', showListValidator, (req, res, next) => {
 * `Middlewall.prototype.locals()` <br>
     generate a middleware where the validation root object is the incoming `response.locals` object.
 
+
+Note: 
+* `Middleware` class was not intended to be instantiate directly, instead use `compose` operator (see Usage section) 
+
 <br><br>
 
 ### Operators
 
-brick validation operators, customize the brick validation usage.
+Note : <br>
+* brick refer to validation operation or an object / function of type `AsyncBrickFn`, the bricks are used for build up your middlewall.
+<br>
 
-`buildStack(...bricks: Array<AsyncBrickFn | Middlewall>): Middlewall` <br>
-Use to build a stack of validation operations, function as a logical and.
+Validation operators used for customize the validation operations.
 
-`and(...bricks: Array<AsyncBrickFn | Middlewall>): AsyncBrickFn` <br>
-Use to perform validation on each item in an array.
+* `compose(...bricks: Array<AsyncBrickFn | Middlewall>): Middlewall` <br>
+    Use to compose one or more validation operations to a `Middlewall`, function as a logical and.
 
-`or(...bricks: Array<AsyncBrickFn | Middlewall>): AsyncBrickFn` <br>
-Use to perform validation on each item in an array.
+* `and(...bricks: Array<AsyncBrickFn | Middlewall>): AsyncBrickFn` <br>
+    Use to reduce one or more validation to a single validation operation (a brick), function as a logical and.
 
-`goTo(path: string, ...bricks: Array<AsyncBrickFn | Middlewall>): AsyncBrickFn` <br>
-Use to navigate inside the target object. 
+* `or(...bricks: Array<AsyncBrickFn | Middlewall>): AsyncBrickFn` <br>
+    Use to reduce one or more validation to a single validation operation (a brick), function as a logical or.
 
-`each(...bricks: Array<AsyncBrickFn | Middlewall>): AsyncBrickFn` <br>
-Use to perform validation on each item in an array, where only all the items must pass the validation.
+* `goTo(path: string, ...bricks: Array<AsyncBrickFn | Middlewall>): AsyncBrickFn` <br>
+    Use to navigate inside the target object. 
 
-`some(...bricks: Array<AsyncBrickFn | Middlewall>): AsyncBrickFn` <br>
-Use to perform validation on each item in an array, where only one item must pass the validation.
+* `each(...bricks: Array<AsyncBrickFn | Middlewall>): AsyncBrickFn` <br>
+    Use to perform validation on each item in an array, where only all the items must pass the validation.
 
-
+* `some(...bricks: Array<AsyncBrickFn | Middlewall>): AsyncBrickFn` <br>
+    Use to perform validation on each item in an array, where only one item must pass the validation.
 
 
 
@@ -223,7 +228,9 @@ Use to perform validation on each item in an array, where only one item must pas
 
 Operations follow the same API structure *in general*, <br>
 different operations can receive different amount of parameters with different types.  <br>
-The general structure: 
+The general structure:  <br>
+`operation(path: string, args1: any, args2: any, ... , ifPass?: IfPassFn, options?: ValidationOptions)`
+
 * `path: string` 
     - path to the target field from the current context location.
     - required
@@ -239,3 +246,40 @@ The general structure:
 * `options?: ValidationOptions`
     - option for the validation operation.
     - optional 
+
+<br>
+
+**interface `ValidationOptions`** <br>
+
+fields : <br>
+
+* optional
+    + type: `boolean`
+    + description : ignore validation result if value is undefined or null, validation action still run.
+    + required: no
+
+* overwriteValue
+    + type: `boolean`
+    + description : overwrite the target value with the return value of is-pass callback.
+    + required: no
+
+* default
+    + type: `any`
+    + description : set the target to the provided value if 'optional' set to true and target value not exists.
+    + required: no
+
+<br>
+
+**function `IfPassFn`** <br>
+
+arguments : <br>
+
+* target
+    + type: `any`
+    + description : the target field on which the validation performed on.
+
+* root
+    + type: `boolean`
+    + description : the top level parent object, were the target field is derived from.
+
+
