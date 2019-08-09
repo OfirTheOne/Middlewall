@@ -1,6 +1,6 @@
 
 
-import * as xfw from './../lib/core';
+import { goTo, each, compose } from './../lib/core';
 import * as op from './../lib/operations';
 import { expect } from 'chai';
 import { BrickResultCollection } from '../lib/models';
@@ -9,9 +9,9 @@ describe('each operator', function () {
     it('should return with no errors', async () => {
         try {
             // -- 01 -- build the validation stack.
-            const validation = xfw.buildStack(
-                xfw.goTo('items', 
-                    xfw.each(
+            const validation = compose(
+                goTo('items', 
+                    each(
                         op.isArray('arr'),
                         op.isString('text'),
                         op.isNumber('num'),
@@ -47,9 +47,9 @@ describe('each operator', function () {
     it('should return with errors', async () => {
         try {
             // -- 01 -- build the validation stack.
-            const validation = xfw.buildStack(
-                xfw.goTo('items', 
-                    xfw.each(
+            const validation = compose(
+                goTo('items', 
+                    each(
                         op.isArray('arr'),
                         op.isString('text'),
                         op.isNumber('num'),
@@ -90,9 +90,9 @@ describe('each operator', function () {
     it('iterate over array of non object items - should return with errors', async () => {
         try {
             // -- 01 -- build the validation stack.
-            const validation = xfw.buildStack(
-                xfw.goTo('items', 
-                    xfw.each(
+            const validation = compose(
+                goTo('items', 
+                    each(
                         op.isNumber(''),
                     )
                 )
@@ -127,9 +127,9 @@ describe('each operator', function () {
     it('iterate over array of non object items - should return with no errors', async () => {
         try {
             // -- 01 -- build the validation stack.
-            const validation = xfw.buildStack(
-                xfw.goTo('items', 
-                    xfw.each(
+            const validation = compose(
+                goTo('items', 
+                    each(
                         op.isNumber(''), 
                         op.isGt('', 9)
                     )
