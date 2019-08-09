@@ -1,7 +1,7 @@
 
 export * from './middlewall';
 
-export * from './operators/build-wall';
+export * from './operators/compose';
 export * from './operators/and';
 export * from './operators/or';
 export * from './operators/each';

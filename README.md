@@ -15,11 +15,15 @@ making a leaner, reusable, more readable code.
 * Custom async validations
 
 
+
+
+## Quick Overview
+
 Working with Middlewall involve using 
 - operations - validations methods  
 - operators - activate and manipulate the validation methods
 
-
+In a nutshell, with the given operators you're composing a single block of validation from multiple individual validation operations then you can reuse that single block validation or transforming it to a middleware.
 
 
 
@@ -29,35 +33,54 @@ Working with Middlewall involve using
 ## Usage
 
 
-let say you're building an API that support reading shows, artists and venues all with pagination,
+Let say you're building an API that support reading shows, artists and venues all with pagination,
 each of the readable item type implemented on an individual controller. 
 
-pagination in your API implemented with a single protocol, using 'page' and 'pageSize',
+Pagination in your API implemented with a single protocol, using 'page' and 'pageSize' provided as a query parameters,
 
 in the following code piece we're creating a middleware to validate and parse 'page' and 'pageSize' parameters,
 it will be plugged before each API call used for reading. 
 
 ```ts
 
-import { buildStack, goTo, each } from 'middlewall/core';
+import { compose, goTo, each } from 'middlewall/core';
 import * as ops from 'middlewall/operations';
 
 const app = express();
 
-app.use((errors, req, res, next) => {
-    /*
-        any found validation errors will end up here ..
+app.use((err, req, res, next) => {
+    /*  any found validation errors will end up here ..
+        for example: for the call '/show?page=-3&pageSize=100', err will look like :
+        {
+            "pass": false,
+            "errors": [
+                {
+                    "pass": false,
+                    "error": "value is not pass as a positive number",
+                    "value": -3,
+                    "path": "query.page",
+                    "validation": "isPositive"
+                }
+            ]
+        } 
     */
 });
 
 
-const paginationValidator = buildStack(
+const paginationValidator = compose(
     // validate query.page is a string-number and if so parse it
-    ops.isIntegerString('page', (page, root) => page = parseInt(page), undefined, { optional: true }),  
+    ops.isIntegerString('page',                     // <-- point to the target field            
+        (page, req) => parseInt(page) || 1,         // <-- provide an if-pass cb
+        undefined,                                  // <-- a costume error massage can be provided 
+        { overwriteValue: true, optional: true, default: 1 }    // <-- setting field as optional and overwrite it with if-pass cb return value
+    ),  
     ops.isPositive('page', undefined, undefined, { optional: true }),
 
     // validate query.pageSize is a string-number and if so parse it
-    ops.isIntegerString('pageSize', (pageSize, root) => pageSize = parseInt(pageSize), undefined, { optional: true }),
+    ops.isIntegerString('pageSize', 
+        (pageSize, req) => parseInt(pageSize), 
+        undefined, 
+        { overwriteValue: true, optional: true, default: 20 }),
     ops.isBetween('pageSize', 1, 100),
 ).query(); // top target object is req.query.
 
@@ -67,87 +90,69 @@ app.get('/show', paginationValidator, (req, res, next) => {
     }
 );
 
-app.get('/artist', paginationValidator, (req, res, next) => {
-        /*  pass all validations! continue your flow */
-    }
-);
+// and so on for '/artist' and '/venue' calls ..
 
-app.get('/venue', paginationValidator, (req, res, next) => {
-        /*  pass all validations! continue your flow */
-    }
-);
-
-        // <-- point to the target field
-        // <-- provide an if-pass cb
-        // <-- a costume error massage can be provided 
-        // <-- setting the field to be optional
-        
+    
 ```
 
+<br>
 
+Continue building your API validation layer, your API provides a filtering functionality base on dates, 
+the parameters 'start' and 'end' provided with the range dates.
 
-
+in the following code piece we're creating a middleware to validate the dates range could be something like :
 
 ```ts
-
-import { buildStack, goTo, each } from 'middlewall/core';
-import * as ops from 'middlewall/operations';
-
-const app = express();
-
-app.use((errors, req, res, next) => {
-    /*
-        any found validation errors will end up here ..
-    */
-});
-
-
-const paginationValidator = buildStack(
-    // validate query.page is a string-number and if so parse it
-    ops.isIntegerString('page', (_, {query}) => query.page = parseInt(query.page), undefined, { optional: true }),  
-    ops.isPositive('page', undefined, undefined, { optional: true }),
-
-    // validate query.pageSize is a string-number and if so parse it
-    ops.isIntegerString(
-        'pageSize', (_, {query}) => query.pageSize = parseInt(query.pageSize), 
-        undefined, { optional: true }
-    ),
-    ops.isBetween('pageSize', 1, 100),
-).query(); // top target object is req.query.
-
-const dateValidator = buildStack(
-    ops.isDateString('start', 'mm-dd-yyyy'),
-    ops.isDateString('end', 'mm-dd-yyyy'),
+static dateValidator = compose(
+    ops.isDateString('start', 'mm-dd-yyyy',    
+        (start, req) => moment(start, 'mm-dd-yyyy'),        
+        undefined, 
+        { overwriteValue: true, optional: true, default: moment().year(1970) }),
+    ops.isDateString('end', 'mm-dd-yyyy',
+        (end, req) => moment(end, 'mm-dd-yyyy'),        
+        undefined, 
+        { overwriteValue: true, optional: true, default: moment().year(2100) }),
 ).query(); // top target object is req.query. 
 
+
+app.get('/show', paginationValidator, dateValidator, (req, res, next) => {
+        /*  pass all validations! continue your flow 
+            for example: for the call '/show?page=1&start=04-20-2015, req.query will look like :
+            {
+                "page": 1,
+                "start": "2019-08-08T21:04:00.000Z",
+                "end": "2100-08-09T11:10:43.251Z",
+                "pageSize": 20
+            }
+        */
+
+    }
+);
+
+
+```
+
+<br>
+
+Now your incoming request storing some more complex object you must validate,
+
+```ts
 const showListValidator = buildStack(
     ops.isArray('shows'), // validate body.shows is an array
     goTo('shows', // navigate to body.shows 
         each(     // perform the validations list on each of the items in the 'shows' array
             ops.isAlpha('name'),
             ops.isDateString('showDate', 'mm-dd-yyyy'),
-            ops.isBoolean('visible', undefined, undefined, { optional: true })
+            ops.isBoolean('visible', undefined, undefined, { optional: true, default: true })
         )
     )
 ).body(); // top target object is req.body.
 
 
-app.get('/', dateValidator, paginationValidator,
-    (req, res, next) => {
-        /*
-            pass all validations! continue your flow
-        */
+app.post('/show', showListValidator, (req, res, next) => {
+        /*  pass all validations! continue your flow */
     }
 );
-
-app.post('/', showListValidator,
-    (req, res, next) => {
-        /*
-            pass all validations! continue your flow
-        */
-    }
-);
-
 
 ```
 

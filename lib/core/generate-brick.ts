@@ -88,22 +88,40 @@ export function generateBrick(
                 };
             } else {
 
-            // ** 03 - is-pass action
+            // ** 03 - set default action
                 try {
-                    if(result && ifPass && typeof ifPass == 'function') {
-                        // const {parent, pathToChild} = getNestedElementParentByPath(arg, path);
-                        // if(pathToChild) {
-                            // parent[pathToChild] = 
-                            ifPass(target, root);
-                        // }
+                    if(isOptional && target == undefined && options.default != undefined) {
+                        setTargetNewValue(arg, path, options.default);
                     }
                 } catch (error) {
                     throw error;
                 }
+            // ** 04 - is-pass action
+                try {
+                    if(result && ifPass && typeof ifPass == 'function') {
+                        const newValue = ifPass(target, root);
+                        if(parsedOptions.overwriteValue) {
+                            setTargetNewValue(arg, path, newValue);
+                        }
+                    }
+                } catch (error) {
+                    throw error;
+                }
+
+
             }
             return error || { pass: true , errors: [] } as BrickResultCollection;
         } catch (error) {
             return { pass: false , errors: [{ pass : false, error, path}] } as BrickResultCollection;
         }
     };
+}
+
+
+
+function setTargetNewValue(arg: any, path: string, newValue: any) {
+    const {parent, pathToChild} = getNestedElementParentByPath(arg, path);
+    if(parent && pathToChild) {
+        parent[pathToChild] = newValue
+    }
 }
