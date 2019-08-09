@@ -1,5 +1,5 @@
 {
-  "name": "Middlewall",
+  "name": "middlewall",
   "version": "0.1.0",
   "description": "Modulated validation library for express",
   "main": "dist/index.js",
