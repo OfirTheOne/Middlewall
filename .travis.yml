@@ -12,7 +12,7 @@ branches:
   - develop
   - production
 install:
- - npm ci
+ - npm i
 
 script:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then npm run test:osx          ; fi
