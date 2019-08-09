@@ -3,7 +3,7 @@
 
 
 [![Build Status](https://travis-ci.com/OfirTheOne/Middlewall.svg?branch=production)](https://travis-ci.org/OfirTheOne/Middlewall)
-[![npm](https://img.shields.io/npm/v/Middlewall.svg)](https://www.npmjs.com/package/Middlewall)
+[![npm](https://img.shields.io/npm/v/middlewall.svg)](https://www.npmjs.com/package/middlewall)
 
 With Middlewall you can build plugable validation middlewares, 
 Separate all validation functionality to different layer than your business logic, 
