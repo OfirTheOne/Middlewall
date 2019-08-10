@@ -45,8 +45,8 @@ it will be plugged before each API call used for reading.
 
 ```ts
 
-import { compose, goTo, each } from 'middlewall/core';
-import * as ops from 'middlewall/operations';
+import { compose, goTo, each } from 'middlewall';
+import * as ops from 'middlewall';
 
 const app = express();
 
@@ -71,10 +71,10 @@ app.use((err, req, res, next) => {
 
 const paginationValidator = compose(
     // validate query.page is a string-number and if so parse it
-    ops.isIntegerString('page',                     // <-- point to the target field            
-        (page, req) => parseInt(page) || 1,         // <-- provide an if-pass cb
-        undefined,                                  // <-- a costume error massage can be provided 
-        { overwriteValue: true, optional: true, default: 1 }    // <-- setting field as optional and overwrite it with if-pass cb return value
+    ops.isIntegerString('page',                     // point to the target field            
+        (page, req) => parseInt(page) || 1,         // provide an if-pass cb
+        undefined,                                  // a costume error massage can be provided 
+        { overwriteValue: true, optional: true, default: 1 }    // setting field as optional and overwrite it with if-pass cb return value
     ),  
     ops.isPositive('page', undefined, undefined, { optional: true }),
 
@@ -136,13 +136,40 @@ app.get('/show', paginationValidator, dateValidator, (req, res, next) => {
 
 <br>
 
-Now your incoming request storing some more complex object you must validate,
+Now your API support post content functionalities, for that an authorization process must take place,
+
+in the following code piece we're creating a custom authorization middleware for the incoming request and validate posed content.
 
 ```ts
-const showListValidator = buildStack(
-    ops.isArray('shows'), // validate body.shows is an array
-    goTo('shows', // navigate to body.shows 
-        each(     // perform the validations list on each of the items in the 'shows' array
+
+const authHeaderValidator = compose(
+    ops.isExist('req.headers.authorization'), 
+    ops.isStartWith(
+        'req.headers.authorization', 'Bearer ', 
+        (auth: string) => auth.slice('Bearer '.length), 
+        undefined, { overwriteValue: true }
+    ),
+    ops.run('', // empty string meaning stay on the root object.
+        async ({ req, res }) => { 
+            try {
+                const { authorization } = req.headers;
+                const decodedToken = await firebaseAdmin.auth().verifyIdToken(authorization);
+                if(!decodedToken || !decodedToken.uid) {
+                    return false;
+                }
+                res.locals.uid = decodedToken.uid;
+                return true;
+            } catch (error) {
+                return false;
+            } 
+        }, undefined, 'Authentication failed'
+    )
+).args();
+
+const showListValidator = compose(
+    ops.isArray('shows'),   // validate body.shows is an array
+    goTo('shows',           // navigate to body.shows 
+        each(               // perform the validations list on each of the items in the 'shows' array
             ops.isAlpha('name'),
             ops.isDateString('showDate', 'mm-dd-yyyy'),
             ops.isBoolean('visible', undefined, undefined, { optional: true, default: true })
@@ -151,7 +178,7 @@ const showListValidator = buildStack(
 ).body(); // top target object is req.body.
 
 
-app.post('/show', showListValidator, (req, res, next) => {
+app.post('/show', authHeaderValidator, showListValidator, (req, res, next) => {
         /*  pass all validations! continue your flow */
     }
 );
@@ -163,12 +190,14 @@ app.post('/show', showListValidator, (req, res, next) => {
 
 ## Api Reference
 
-<br>
 
 ### Middlewall
 
 `Middlewall` <br>
     encapsulate a collection of validation operations in a middleware compatible with express API.
+
+* `Middlewall.prototype.args()` <br>
+    generate a middleware where the validation root object is an object structured `{req: Request res: Response}`.
 
 * `Middlewall.prototype.req()` <br>
     generate a middleware where the validation root object is the incoming `request` object.

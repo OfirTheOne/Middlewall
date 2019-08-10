@@ -31,6 +31,22 @@ export class Middlewall implements IMiddlewall{
     public locals() {
         return this.exMiddlewareFactory((req)=>({target: req.locals, path: 'locals'}));
     }
+    public args() {
+        return async (req: Request, res: Response, next: NextFunction) => {
+            try {
+                const target = {req, res};
+                const result = await reduce('', target, target, this._bricks);
+
+                if (result.pass) {
+                    return next();
+                } else {
+                    return next(result);
+                }
+            } catch (error) {
+                return next(error);
+            }
+        }
+    }
 
     public toBrick(): AsyncBrickFn {
         return ( (pathToArg: string, arg: any, root: any) => reduce(undefined, arg, root, this._bricks) )   

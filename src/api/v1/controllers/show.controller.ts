@@ -6,9 +6,9 @@ export class ShowController {
     router: Router = Router();
     constructor() {
         this.router.get('/',
-            // AuthValidator.authHeaderValidator,
-            ShowValidator.dateValidator,
-            ShowValidator.paginationValidator,
+            AuthValidator.authHeaderValidator,
+            // ShowValidator.dateValidator,
+            // ShowValidator.paginationValidator,
             this.getShows.bind(this)
         );
 
