@@ -1,6 +1,6 @@
 {
   "name": "middlewall",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Modulated validation library for express",
   "main": "dist/index.js",
   "os": [
