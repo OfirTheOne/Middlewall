@@ -6,7 +6,9 @@ import {
     _isArray, 
     _isObject, 
     _isNumber, 
-    _isBoolean 
+    _isBoolean,
+    _isTypeOf, 
+    _isArrayOf
 } from './validation-logic';
 
 
@@ -33,4 +35,14 @@ export function isNumber(path: string, ifPass?: IfPassFn, error?: string, option
 export function isBoolean(path: string, ifPass?: IfPassFn, error?: string, options?: ValidationOptions): AsyncBrickFn {   
     const _error = new BrickError(error || `%s is not of type boolean`, 'isBoolean');
     return generateBrick(_isBoolean, undefined, path, _error, ifPass, options);
+}
+
+export function isTypeOf(path: string, type: string,ifPass?: IfPassFn, error?: string, options?: ValidationOptions): AsyncBrickFn {   
+    const _error = new BrickError(error || `%s is not of type ${type}`, 'isTypeOf');
+    return generateBrick(_isTypeOf, [type], path, _error, ifPass, options);
+}
+
+export function isArrayOf(path: string, type: string,  ifPass?: IfPassFn, error?: string, options?: ValidationOptions): AsyncBrickFn {   
+    const _error = new BrickError(error || `%s is not an array of type ${type}`, 'isArrayOf');
+    return generateBrick(_isArrayOf, [type], path, _error, ifPass, options);
 }

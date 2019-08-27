@@ -21,3 +21,7 @@ export const _isUndefined = (arg) => arg == undefined;
 
 export const _isEmpty = (arg) => (_isExist(arg) && arg.length && arg.length > 0);
 export const _isNaN = (arg) => arg == NaN;
+
+export const _isIncludeKeys = (arg: any, key: (string | Array<string>)) => 
+    _isExist(arg) && (Array.isArray(key) ? key : [key]).every(k => _isExist(arg[k]));
+
