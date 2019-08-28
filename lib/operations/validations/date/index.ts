@@ -12,7 +12,7 @@ export const isDateString = (path: string, format: SimpleDateFormat, ifPass?: If
 
 export const isDate = (path: string, ifPass?: IfPassFn, error?: string, options?: ValidationOptions): AsyncBrickFn => {
     const _error = new BrickError(error || `%s is not as a valid date `, 'isDate');
-    return generateBrick( _isDateString, undefined, path, _error, ifPass, options);
+    return generateBrick( _isDate, undefined, path, _error, ifPass, options);
 }
 
 

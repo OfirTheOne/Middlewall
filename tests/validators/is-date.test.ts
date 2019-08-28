@@ -3,7 +3,7 @@
 import { _isDate } from './../../lib/operations/validations/date/validation-logic'
 import { expect } from 'chai';
 
-describe('idDate validators', function () {
+describe('isDate validator', function () {
     it('should pass all validation', async () => {
         try {
 

@@ -1,9 +1,9 @@
 
 
-import { goTo, each, compose } from './../lib/core';
-import * as op from './../lib/operations';
+import { goTo, each, compose } from './../../lib/core';
+import * as op from './../../lib/operations';
 import { expect } from 'chai';
-import { BrickResultCollection } from '../lib/models';
+import { BrickResultCollection } from '../../lib/models';
 
 describe('each operator', function () {
     it('should return with no errors', async () => {

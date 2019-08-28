@@ -1,18 +1,18 @@
 
 
-import { or, compose } from './../lib/core';
-import * as op from './../lib/operations';
-import { BrickResultCollection } from './../lib/models'
+import { or, compose } from './../../lib/core';
+import * as op from './../../lib/operations';
+import { BrickResultCollection } from './../../lib/models'
 
 import { expect } from 'chai';
 
-describe('validation-options', function () {
-    it('should return with no errors and set default values', async () => {
+describe('or operator', function () {
+    it('should return with no errors', async () => {
         try {
             // -- 01 -- build the validation stack.
             const validation = compose(
                 or(
-                    op.isLen('arr', 3, undefined, undefined, { optional: true, default: [1, 2, 3]}),
+                    op.isLen('arr', 3),
                     op.isGt('num', 8)
                 )
             ).body();
@@ -20,14 +20,14 @@ describe('validation-options', function () {
             // -- 02 -- stub the controller method.
             const req: any = { 
                 body: {
-                    num: 1, text: 'hello a'
+                    num: 10, text: 'hello a', arr: [1,2]
                 }
             };
             const res: any = {};
             const next = (errors: BrickResultCollection) => {
                 // validate the expected errors
                 expect(errors).to.be.undefined;
-                expect(req.body.arr).to.be.eqls([1, 2, 3]);
+                
             }
 
             // -- 03 -- run the controller method.
@@ -38,33 +38,39 @@ describe('validation-options', function () {
         }
     });
 
-    it('should return with no errors and not set value of is-pass cb', async () => {
+    it('should return with errors', async () => {
         try {
             // -- 01 -- build the validation stack.
             const validation = compose(
                 or(
-                    op.isLen('arr', 3, () => [1,1], undefined, { optional: true, overwriteValue: true, default: [2,2] }),
-                    op.isGt('num', 8, () => 100)
+                    op.isLen('arr', 3),
+                    op.isGt('num', 10)
                 )
             ).body();
 
             // -- 02 -- stub the controller method.
-            const req: any = { 
+            const req = { 
                 body: {
-                    num: 9, text: 'hello a'
+                    num: 10, text: 'hello a', arr: [1,2]
                 }
             };
             const res: any = {};
             const next = (errors: BrickResultCollection) => {
                 // validate the expected errors
-                // console.log(errors);
-                expect(errors).to.be.undefined;
-                expect(req.body.num).to.be.eqls(9);
-                expect(req.body.arr).to.be.eqls([2,2]);
+                expect(errors).to.not.be.undefined;
+                expect(errors.errors).to.be.of.length(2);
+
+                const [err01, err02] = errors.errors;
+
+                expect(err01.path).to.be.equals('body.arr');
+                expect(err01.value).to.be.equals(req.body.arr);
+
+                expect(err02.path).to.be.equals('body.num');
+                expect(err02.value).to.be.equals(req.body.num);
             }
 
             // -- 03 -- run the controller method.
-            validation(req, res, next);
+            await validation(req as any, res, next);
 
         } catch (error) {
             throw error;
